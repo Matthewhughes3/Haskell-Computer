@@ -18,12 +18,17 @@ runTest t r g = all (==True) results
         results = map (\(x, y) -> t x y) rands
 
 main = do
-    (command:_) <- getArgs
+    (command:additionalCommands) <- getArgs
+    let rounds = if null additionalCommands 
+                    then defaultRounds 
+                    else case reads $ head additionalCommands of
+                      [] -> defaultRounds
+                      [(r,_)] -> r
     gen <- getStdGen
     case lookup command dispatch of
         Nothing -> putStrLn "Invalid Command"
         (Just test) -> 
-            if runTest test defaultRounds gen 
+            if runTest test rounds gen 
                 then putStrLn "Test Passed"
                 else putStrLn "Test Failed"
 
@@ -32,15 +37,9 @@ addTest :: Int -> Int -> Bool
 addTest x y = applyBitCalc addBits x y == x + y
 
 -- Helpers
-greatestPowerOfTwo :: Int -> (Int,Int)
-greatestPowerOfTwo n = let (Just x) = lookup 1 powers in x
-  where powers = map (\x -> (n `div` 2^x, (2^x, x))) [0..]
-
 decToBits :: Int -> [Bool]
-decToBits 0 = [False]
-decToBits x = addBits ([True] ++ replicate p False) (decToBits y)
-  where (gp, p) = greatestPowerOfTwo x
-        y = x - gp
+decToBits n = reverse $ map (odd) powers
+  where powers = takeWhile (\x -> x > 0) $ map (\x -> n `div` 2^x) [0..]
 
 bitsToDec :: [Bool] -> Int
 bitsToDec [] = 0
