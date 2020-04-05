@@ -39,14 +39,12 @@ addBits :: [Bool] -> [Bool] -> [Bool]
 addBits x y = bitAdder (reverse x) (reverse y) False
 
 -- TODO: Refactor
+-- I think whichever list is longer can just be
+-- tacked onto the end of the calculation after
+-- the carry if factored in
 bitAdder :: [Bool] -> [Bool] -> Bool -> [Bool]
 bitAdder [] [] c = [c]
-bitAdder [] (y:ys) c =
-  let [c1, s] = fullAdder False y c 
-  in bitAdder [] ys c1 ++ [s]
-bitAdder (x:xs) [] c =
-  let [c1, s] = fullAdder x False c 
-  in bitAdder xs [] c1 ++ [s]
-bitAdder (x:xs) (y:ys) c = 
-  let [c1, s] = fullAdder x y c 
-  in bitAdder xs ys c1 ++ [s]
+bitAdder list1 list2 c = bitAdder xs ys c1 ++ [s]
+  where (x:xs) = if null list1 then False:[] else list1
+        (y:ys) = if null list2 then False:[] else list2
+        [c1, s] = fullAdder x y c
