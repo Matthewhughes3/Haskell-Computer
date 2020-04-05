@@ -1,18 +1,4 @@
--- These helper functions are just to make verifying calculations quicker and easier
-greatestPowerOfTwo :: Int -> (Int,Int)
-greatestPowerOfTwo n = let (Just x) = lookup 1 powers in x
-  where powers = map (\x -> (n `div` 2^x, (2^x, x))) [0..]
-
-decToBits :: Int -> [Bool]
-decToBits 0 = [False]
-decToBits x = addBits ([True] ++ replicate (p) False) (decToBits y)
-  where (gp, p) = greatestPowerOfTwo x
-        y = x - gp
-
-bitsToDec :: [Bool] -> Int
-bitsToDec [] = 0
-bitsToDec (x:xs) = if x then 2 ^ (length xs) + bitsToDec xs else bitsToDec xs
--- End helpers
+module Arithmetic (addBits) where
 
 xor :: Bool -> Bool -> Bool
 xor x y = x /= y
@@ -41,7 +27,7 @@ addBits x y = bitAdder (reverse x) (reverse y) False
 -- TODO: Refactor
 -- I think whichever list is longer can just be
 -- tacked onto the end of the calculation after
--- the carry if factored in
+-- the carry is factored in
 bitAdder :: [Bool] -> [Bool] -> Bool -> [Bool]
 bitAdder [] [] c = [c]
 bitAdder list1 list2 c = bitAdder xs ys c1 ++ [s]
